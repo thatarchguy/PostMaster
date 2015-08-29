@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+﻿#! /usr/bin/env python
 '''
 Module that runs pylint on all python scripts found in a directory tree..
 '''
@@ -20,7 +20,7 @@ def check(module):
     if module[-3:] == ".py":
 
         print "CHECKING ", module
-        pout = os.popen('pylint --rcfile=.pylintrc %s' % module, 'r')
+        pout = os.popen('pylint --rcfile=.pylintrc "%s"' % module, 'r')
         for line in pout:
             if re.match("E....:.", line):
                 print line
@@ -43,6 +43,8 @@ if __name__ == "__main__":
         if "env" in root:
             continue
         elif "tests" in root:
+            continue
+        elif "migrations" in root:
             continue
         for name in files:
             filepath = os.path.join(root, name)
