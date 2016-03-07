@@ -8,7 +8,7 @@ coveralls==1.1
 docopt==0.6.2
 Flask==0.10.1
 Flask-Bcrypt==0.7.1
-Flask-Login==0.3.2
+Flask-Login==0.2.11
 Flask-Migrate==1.8.0
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
