@@ -35,7 +35,7 @@ debconf-set-selections <<< 'mysql-server mysql-server/root_password_again passwo
 echo 'Updating the aptitude repository...'
 apt-get -y update > /dev/null
 
-packages=('python' 'python-pip' 'python-dev' 'libldap2-dev' 'libssl-dev' 'libsasl2-dev' 'apache2' 'libapache2-mod-wsgi' 'mysql-server' 'libmysqlclient-dev')
+packages=('python' 'python-pip' 'python-dev' 'libldap2-dev' 'libssl-dev' 'libsasl2-dev' 'libffi-dev' 'apache2' 'libapache2-mod-wsgi' 'mysql-server' 'libmysqlclient-dev')
 
 for package in "${packages[@]}"
 do

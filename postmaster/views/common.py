@@ -51,7 +51,7 @@ def index():
     """
 
     return render_template('index.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -61,7 +61,7 @@ def login():
     # Calls the new function in order to refresh the auth_source list
     login_form = forms.LoginForm.new()
 
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return redirect(url_for('index'))
     else:
         if request.method == 'GET':
@@ -89,7 +89,7 @@ def logout():
     """
     Logs current user out
     """
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         logout_user()
         flash('Successfully logged out', 'success')
 
@@ -104,7 +104,7 @@ def domains():
     """
 
     return render_template('domains.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/users', methods=["GET"])
@@ -115,7 +115,7 @@ def users():
     """
 
     return render_template('users.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/aliases', methods=["GET"])
@@ -126,7 +126,7 @@ def aliases():
     """
 
     return render_template('aliases.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/admins', methods=["GET"])
@@ -137,7 +137,7 @@ def admins():
     """
 
     return render_template('admins.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/configs', methods=["GET"])
@@ -148,7 +148,7 @@ def configs():
     """
 
     return render_template('configs.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)
 
 
 @app.route('/logs', methods=["GET"])
@@ -159,4 +159,4 @@ def logs():
     """
 
     return render_template('logs.html',
-                           authenticated=current_user.is_authenticated())
+                           authenticated=current_user.is_authenticated)

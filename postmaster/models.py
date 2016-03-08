@@ -240,7 +240,7 @@ class Admins(db.Model):
     def is_authenticated(self):
         """ Returns if user is authenticated
         This is hooked by flask-login.
-        query using current_user.is_authenticated()
+        query using current_user.is_authenticated
         """
         return True
 
