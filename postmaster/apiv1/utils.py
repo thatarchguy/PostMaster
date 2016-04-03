@@ -7,8 +7,7 @@ Purpose: General helper utils
 import os
 from re import match
 from mmap import mmap
-from json import dumps, loads
-from datetime import datetime
+from json import loads
 from ..errors import ValidationError
 from postmaster import db
 from postmaster.models import Configs
@@ -66,52 +65,6 @@ def is_config_update_valid(setting, value, valid_value_regex):
             raise ValidationError('An invalid minimum password length was supplied. The value must be between 1-25.')
 
         raise ValidationError('An invalid setting value was supplied')
-
-    return False
-
-
-def maildb_auditing_enabled():
-    """ Returns a bool based on if mail db auditing is enabled
-    """
-    auditingSetting = Configs.query.filter_by(
-        setting='Mail Database Auditing').first().value
-    return auditingSetting == 'True'
-
-
-def login_auditing_enabled():
-    """ Returns a bool based on if mail db auditing is enabled
-    """
-    auditingSetting = Configs.query.filter_by(
-        setting='Login Auditing').first().value
-    return auditingSetting == 'True'
-
-
-def json_logger(category, admin, message):
-    """
-    Takes a category (typically error or audit), a log message and the responsible
-    user. It then appends it with an ISO 8601 UTC timestamp to a JSON formatted log file
-    """
-    logPath = Configs.query.filter_by(setting='Log File').first().value
-    if (category == 'audit' and maildb_auditing_enabled()) or\
-       (category == 'auth' and login_auditing_enabled()) or\
-       (category == 'error'):
-        try:
-            with open(logPath, mode='a+') as logFile:
-                logFile.write("{}\n".format(dumps(
-                    {
-                        'category': category,
-                        'message': message,
-                        'admin': admin,
-                        'timestamp': datetime.utcnow().isoformat() + 'Z'
-                    },
-                    sort_keys=True)))
-                logFile.close()
-        except IOError:
-            raise ValidationError(
-                'The log could not be written to  "{0}". \
-                Verify that the path exists and is writeable.'.format(
-                    os.getcwd().replace('\\', '/') + '/' + logPath))
-
 
 def get_logs_dict(numLines=50, reverseOrder=False):
     """
