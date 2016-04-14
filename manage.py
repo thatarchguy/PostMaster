@@ -1,7 +1,7 @@
 ﻿#!flask/bin/python
 """
 Author: StackFocus
-File: app.py
+File: manage.py
 Purpose: Manages the app
 """
 
