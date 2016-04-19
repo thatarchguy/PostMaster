@@ -6,7 +6,7 @@
         Windows:
         C:\PostMaster\env\Scripts\activate.ps1
         
-2. Once you've entered the Python virtual environment, navigate to the location of manage.py (replace /opt/postmaster/env with your install location):
+2. Once you've entered the Python virtual environment, navigate to the location of manage.py (replace /opt/postmaster/git with your install location):
 
         cd /opt/postmaster/git
 
