@@ -1,0 +1,59 @@
+---
+
+- name: Create PostMaster User
+  user: name={{remote_user}} comment="PostMaster Service Account"
+
+- name: Install main list of packages
+  apt: pkg={{item}} state=installed update_cache=true
+  become: yes
+  with_items:
+    - git
+    - python
+    - python-pip
+    - python-dev
+    - python-virtualenv
+    - libldap2-dev
+    - libssl-dev
+    - libsasl2-dev
+    - libffi-dev
+    - apache2
+    - libapache2-mod-wsgi
+    - libmysqlclient-dev
+  when: provision_type == "dev"
+
+- name: Create virtualenv directory
+  file: path=/opt/postmaster/env state=directory owner={{remote_user}} group={{remote_user}} mode=0775 recurse=yes
+  become: yes
+
+- name: Create logs directory
+  file: path=/opt/postmaster/logs state=directory owner={{remote_user}} group=www-data mode=0775 recurse=yes
+  become: yes
+
+- pip: requirements=/opt/postmaster/git/requirements.txt virtualenv=/opt/postmaster/env
+
+- include: mysql.yml
+  when: provision_type == "dev"
+
+- name: Enable wsgi module for apache2
+  apache2_module: state=present name=wsgi
+
+- name: Check whether to copy the apache2 vhost file
+  stat: path=/etc/apache2/sites-available/postmaster.conf
+  register: apache2_config
+
+- name: Copy apache2 vhost config over
+  become: yes
+  copy: src=apache2/postmaster.conf dest=/etc/apache2/sites-available/postmaster.conf mode=0644
+  when: apache2_config.stat.exists == False
+
+- name: Enable new vhost
+  command: a2ensite postmaster.conf
+  become: yes
+
+- name: Ensure apache is started and enabled to start at boot.
+  become: yes
+  service: name=apache2 state=restarted enabled=yes
+
+- name: Ensure apache is reloaded
+  become: yes
+  service: name=apache2 state=reloaded

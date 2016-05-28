@@ -1,11 +1,25 @@
-language: python  
-python:  
+language: python
+python:
   - "2.7"
-install:  
+install:
   - pip install -r requirements.txt
 before_script:
   - ./pylint-check.py
-script:  
+script:
   - py.test -v --cov postmaster --cov-report term-missing tests/
-after_success:  
+after_success:
   - coveralls
+
+before_deploy:
+  - gem install fpm
+  - ./build_release.sh
+
+deploy:
+  provider: bintray
+  file: .bintray_descriptor.json
+  user: thatarchguy
+  key:
+    secure: qoGnfUwsoajFoclGpmhTFj8rP6botEqdXHBOP8xG3EvdNMvF1FNhH6DjhKBF3bwQf7/VEczz/TqVaTsOgrdHJvVLTxYSckM569wbdFLn6/b1MohdBaxu1/mcXXw+RVTjep45cwlzaMQoe3aZn8KPtjfal5Bitc2U2cNepkoaj+nftNGpCZVh1pWI/uQXlKQK/CfzS8mQSKrdsRuBvko88R7Th8otqdSwx+dM+IwtimJsupAhlbpU5XlK01zNn++QVvZ3kkPGWVxRFLlPhDhWWxK/RmTBLZ/HqoE6oyHBsd+e8ydLvVovMjAdagBq4ABXPstSr9/vYfaS9o6RTaqWbt0MFdkUpQdpfUnFARay8rPYJkzkRdqRll5byRh9IHxZc34z+j3lVjbzKRyb0kfeCTDdidULJytWa3SWN4xdCMhyyjjpULsMI1X4RYYtO89Uc85BlD0AQrWCkmJ7rqpUPxkaSfBEuhotTi0PUyUIaU1xLpgtNQFf70Pf3bSEG6W3XDR3vy2k6yiZWWSRAQWSbxTA64DmW0wk/q9ePxso3uqzALYU1M5WflEEnCBkXGFQh8MqAmugHjP7BMjoe+vlJFt5ddoa7yNV14EkvbHY/rb1JVA2Oa4FgVVyt0JOYEnPIvD+NY0VjFHWrOAro3uKHNlOg5nUaMEddwIuKZpoZgo=
+  dry-run: true
+  on:
+    tags: true

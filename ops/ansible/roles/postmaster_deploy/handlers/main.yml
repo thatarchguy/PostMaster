@@ -1,0 +1,21 @@
+---
+- name: restart nginx
+  become: yes
+  service: name=nginx state=restarted
+
+- name: validate nginx configuration
+  become: yes
+  command: nginx -t -c /etc/nginx/nginx.conf
+  changed_when: False
+
+- name: reload nginx
+  become: yes
+  service: name=nginx state=reloaded
+
+- name: reload apache
+  become: yes
+  service: name=apache2 state=reloaded
+
+- name: restart apache
+  become: yes
+  service: name=nginx state=restarted

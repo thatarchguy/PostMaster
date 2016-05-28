@@ -1,0 +1,6 @@
+# This playbook deploys the whole application stack in this site.
+- name: install postmaster
+  hosts: all
+
+  roles:
+    - postmaster_deploy

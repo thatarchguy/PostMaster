@@ -71,13 +71,14 @@ def initialize():
         return True
 
     except Exception as e:
-        print "Unexpected error: {0}".format(e.message)
+        print("Unexpected error: {0}".format(e.message))
         return False
 
     return False
 
 # Create a fresh database
 initialize()
+
 
 @pytest.fixture(scope='module')
 def loggedin_client():
