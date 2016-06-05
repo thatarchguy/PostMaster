@@ -6,7 +6,7 @@
         Windows:
         C:\PostMaster\env\Scripts\activate.ps1
         
-2. Once you've entered the Python virtual environment, navigate to the location of manage.py (replace /opt/postmaster/env with your install location):
+2. Once you've entered the Python virtual environment, navigate to the location of manage.py (replace /opt/postmaster/git with your install location):
 
         cd /opt/postmaster/git
 
@@ -27,7 +27,7 @@ Use the following commands to restore the proper permissions on the PostMaster f
 **createdb** runs a database migration, and configures the default configuration settings if they are missing on the database specified using the "setdburi" command.
 This is used during the installation of PostMaster.
 
-**generatekey** replaces the secret key in configs.py which is used by Flask (the Python framework used for PostMaster) for cryptographic functions.
+**generatekey** replaces the secret key in config.py which is used by Flask (the Python framework used for PostMaster) for cryptographic functions.
 After the initial installation, this command should not be run again as all current logins would become invalid upon the next restart of the PostMaster.
 
 **runserver -d -h 0.0.0.0** runs PostMaster in debug mode on port 5000. This is useful if you are having issues as it bypasses the webserver

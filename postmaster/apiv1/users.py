@@ -9,10 +9,10 @@ from flask import request
 from flask_login import login_required, current_user
 from postmaster import db
 from postmaster.models import VirtualUsers, VirtualAliases, Configs
+from postmaster.utils import json_logger
 from ..decorators import json_wrap, paginate
 from ..errors import ValidationError, GenericError
 from . import apiv1
-from utils import json_logger
 
 
 @apiv1.route("/users", methods=["GET"])

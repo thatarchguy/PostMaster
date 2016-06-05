@@ -9,7 +9,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from jinja2 import evalcontextfilter, Markup, escape
 from postmaster import app, forms, models, login_manager
 from postmaster.utils import get_wtforms_errors
-from postmaster.apiv1.utils import json_logger
+from postmaster.utils import json_logger
 
 common = Blueprint('common', __name__)
 
