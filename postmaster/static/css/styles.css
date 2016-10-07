@@ -242,6 +242,10 @@ ul.pagination li.disabled a:hover {
 a.adminLocked {
     color: #e74c3c;
 }
+
+a.admin2FAConfigure {
+    color: #e74c3c;
+}
 /* End of Only Admin Page CSS */
 
 /* Only Configs Page CSS */
@@ -289,36 +293,36 @@ a.adminLocked {
     }
 
     /* No More Tables */
-    #dynamicTable, 
-    #dynamicTable thead, 
-    #dynamicTable tbody, 
-    #dynamicTable th, 
-    #dynamicTable td, 
-    #dynamicTable tr { 
-        display: block; 
+    #dynamicTable,
+    #dynamicTable thead,
+    #dynamicTable tbody,
+    #dynamicTable th,
+    #dynamicTable td,
+    #dynamicTable tr {
+        display: block;
     }
 
-    #dynamicTable thead tr { 
+    #dynamicTable thead tr {
         display: none;
     }
- 
+
     #dynamicTable tr { border: 1px solid #ccc; }
- 
-    #dynamicTable td { 
+
+    #dynamicTable td {
         border: none;
-        border-bottom: 1px solid #eee; 
+        border-bottom: 1px solid #eee;
         position: relative;
-        padding-left: 50%; 
+        padding-left: 50%;
         white-space: normal;
         text-align:left;
     }
- 
-    #dynamicTable td:before { 
+
+    #dynamicTable td:before {
         position: absolute;
         top: 6px;
         left: 6px;
-        width: 45%; 
-        padding-right: 10px; 
+        width: 45%;
+        padding-right: 10px;
         white-space: nowrap;
         text-align:left;
         font-weight: bold;

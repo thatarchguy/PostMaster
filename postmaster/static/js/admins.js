@@ -44,21 +44,40 @@ function deleteAdmin(id) {
 
 // Unlocks an administrator via the API
 function unlockAdmin(id, targetLink) {
+  $.ajax({
+    url: '/api/v1/admins/unlock/' + id,
+    type: 'put',
 
-    $.ajax({
-        url: '/api/v1/admins/' + id + 'unlock/',
-        type: 'put',
+    success: function (response) {
+      addStatusMessage('success', 'The administrator was unlocked successfully');
+      targetLink.parent('td').html('Unlocked');
+    },
 
-        success: function (response) {
-            addStatusMessage('success', 'The administrator was unlocked successfully');
-            targetLink.parent('td').html('Unlocked');
-        },
+    error: function (response) {
+      addStatusMessage('error', filterText(jQuery.parseJSON(response.responseText).message));
+    }
+  });
+}
 
-        error: function (response) {
-            addStatusMessage('error', filterText(jQuery.parseJSON(response.responseText).message));
-        }
-    });
+// Disables 2FA for an administrator via the API
+function disable2FA(id, targetLink) {
+  $.ajax({
+    url: '/api/v1/admins/' + id + '/2factor',
+    method: 'PUT',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({enabled: 'False'}),
+    success: function(data){
+      addStatusMessage('success', '2FA has been disabled');
+      fillInTable();
+    },
+    error: function (response) {
+      addStatusMessage('error', filterText(jQuery.parseJSON(response.responseText).message));
+    }
+  });
+}
 
+function configure2FA(id, targetLink) {
 }
 
 // Sets the event listeners for x-editable
@@ -68,6 +87,7 @@ function editableAdminEventListeners() {
     var adminPassword = $('a.adminPassword');
     var adminName = $('a.adminName');
     var adminLocked = $('a.adminLocked')
+    var admin2FADisable = $('a.admin2FADisable')
 
     adminUsername.unbind();
     adminPassword.unbind();
@@ -167,11 +187,23 @@ function editableAdminEventListeners() {
         unlockAdmin(target.attr('data-pk'), target);
         e.preventDefault();
     });
+
+    admin2FADisable.on('click', function(e) {
+        var target = $(e.target);
+        bootbox.confirm("Are you sure you want to disable 2-Factor?", function(result) {
+          if (result === true) {
+            disable2FA(target.attr('data-pk'), target);
+          }
+        });
+        e.preventDefault();
+    });
 }
 
 // Sets the event listeners in the dynamic table
 function adminEventListeners () {
 
+    var twoFAModal = $('#twoFAModal');
+    var verify2FABtn = $('#verify2FABtn');
     var deleteModal = $('#deleteModal');
     var deleteModalBtn = $('#modalDeleteBtn');
     var newItemAnchor = $('#newItemAnchor');
@@ -189,6 +221,39 @@ function adminEventListeners () {
     };
 
     $('#filterRow input').typeWatch(typeWatchOptions);
+
+    twoFAModal.on('show.bs.modal', function (e) {
+      var id = $(e.relatedTarget).data('pk');
+      $.ajax({
+        url: '/api/v1/admins/' + id + '/2factor/qrcode',
+        success: function(data){
+           $("#qrcode").html(new XMLSerializer().serializeToString(data.documentElement));
+           verify2FABtn.attr('data-pk', id);
+        },
+        error: function (response) {
+          addStatusMessage('error', filterText(jQuery.parseJSON(response.responseText).message));
+          twoFAModal.modal('hide');
+        }
+      });
+    });
+
+    verify2FABtn.on('click', function (e) {
+      var id = $(this).attr('data-pk');
+      $.ajax({
+        url: '/api/v1/admins/' + id + '/2factor/verify',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify ({code: $("#verify2FACode").val()}),
+        success: function(data){
+          twoFAModal.modal('hide');
+          fillInTable();
+        },
+        error: function (response) {
+          addStatusMessage('error', filterText(jQuery.parseJSON(response.responseText).message));
+        }
+      });
+    });
 
     deleteModal.on('show.bs.modal', function (e) {
         deleteModalBtn.attr('data-pk', $(e.relatedTarget).data('pk'));
@@ -279,6 +344,7 @@ function fillInTable () {
             html += '<td data-title="Username: "><a href="#" class="adminUsername" data-pk="' + item.id + '" data-url="/api/v1/admins/' + item.id + '" title="Click to change the username">' + filterText(item.username) + '</a></td>\
                     <td data-title="Password: "><a href="#" class="adminPassword" data-pk="' + item.id + '" data-url="/api/v1/admins/' + item.id + '" title="Click to change the password">●●●●●●●●</a></td>\
                     <td data-title="Name: "><a href="#" class="adminName" data-pk="' + item.id + '" data-url="/api/v1/admins/' + item.id + '" title="Click to change the name">' + filterText(item.name) + '</a></td>\
+                    <td data-title="2FA: ">' + (item.twoFactor ? ('<a href="#" class="admin2FADisable" data-pk="' + item.id + '" title="Click to disable 2-factor">Configured</a>') : ('<a href="#" class="admin2FAConfigure" data-pk="' + item.id + '" data-toggle="modal" data-target="#twoFAModal" title="Click to configure 2 Factor">Configure</a>')) + '</td>\
                     <td data-title="Locked: ">' + (item.locked ? ('<a href="#" class="adminLocked" data-pk="' + item.id + '" title="Click to unlock the administrator">Locked</a>') : 'Unlocked') + '</td>\
                     <td data-title="Action: "><a href="#" class="deleteAnchor" data-pk="' + item.id + '" data-toggle="modal" data-target="#deleteModal">Delete</a></td>';
             tableRow.length == 0 ? html += '</tr>' : null;

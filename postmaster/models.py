@@ -8,8 +8,10 @@ from datetime import datetime, timedelta
 from .errors import ValidationError
 from re import search, match
 from os import urandom
+import base64
 from passlib.hash import sha512_crypt as sha512  # pylint: disable=no-name-in-module
 from hashlib import sha1
+import onetimepass
 
 
 class VirtualDomains(db.Model):
@@ -226,6 +228,8 @@ class Admins(db.Model):
     username = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(64))
     source = db.Column(db.String(64))
+    otp_secret = db.Column(db.String(16))
+    otp_active = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True)
     failed_attempts = db.Column(db.Integer)
     last_failed_date = db.Column(db.DateTime)
@@ -262,7 +266,8 @@ class Admins(db.Model):
         """
         return {'id': self.id, 'name': self.name, 'username': self.username, 'failed_attempts': self.failed_attempts,
                 'last_failed_date': self.last_failed_date, 'unlock_date': self.unlock_date,
-                'locked': (self.unlock_date is not None and self.unlock_date > datetime.utcnow())}
+                'locked': (self.unlock_date is not None and self.unlock_date > datetime.utcnow()),
+                'twoFactor': self.otp_active}
 
     def from_json(self, json):
         if not json.get('username', None):
@@ -365,6 +370,17 @@ class Admins(db.Model):
             raise ValidationError('The password must be at least {0} characters long'.format(min_pwd_length))
 
         self.password = bcrypt.generate_password_hash(new_password)
+
+    def generate_otp_secret(self, **kwargs):
+        # generate a random secret
+        self.otp_secret = base64.b32encode(urandom(10)).decode('utf-8')
+
+    def get_totp_uri(self):
+        return 'otpauth://totp/PostMaster:{0}?secret={1}&issuer=PostMaster' \
+            .format(self.username, self.otp_secret)
+
+    def verify_totp(self, token):
+        return onetimepass.valid_totp(token, self.otp_secret)
 
 
 class Configs(db.Model):

@@ -2,6 +2,7 @@
 import random
 import json
 from mock import patch
+import onetimepass
 from datetime import datetime, timedelta
 from postmaster import app, db
 from postmaster.models import Configs, Admins
@@ -327,6 +328,96 @@ class TestMailDbFunctions:
     def test_admins_unlock_not_found(self, loggedin_client):
         rv = loggedin_client.put("/api/v1/admins/50/unlock", follow_redirects=True)
         assert rv.status_code == 404
+
+    def test_admins_2factor_qrcode(self, loggedin_client):
+        rv = loggedin_client.get("/api/v1/admins/1/2factor/qrcode")
+        assert rv.status_code == 200
+
+    def test_admins_2factor_status(self, loggedin_client):
+        rv = loggedin_client.get("/api/v1/admins/1/2factor")
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert rv.status_code == 200
+
+    def test_admins_2factor_update_fail(self, loggedin_client):
+        rv = loggedin_client.put("/api/v1/admins/1/2factor")
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert rv.status_code == 400
+        assert "invalid request" in rv.data
+
+    def test_admins_2factor_enable_fail(self, loggedin_client):
+        rv = loggedin_client.put("/api/v1/admins/1/2factor", data=json.dumps({"enabled": "True"}))
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert rv.status_code == 400
+        assert "Cannot enable 2 factor" in rv.data
+
+    def test_admins_2factor_verify_invalid(self, loggedin_client):
+        test_admin = Admins().from_json({
+            'username': 'test_admin',
+            'password': 'S0meG00dP@ss',
+            'name': 'Test Admin'
+        })
+        test_admin.generate_otp_secret()
+        test_admin.otp_active = 1
+
+        db.session.add(test_admin)
+        db.session.commit()
+        rv = loggedin_client.post("/api/v1/admins/{0}/2factor/verify".format(test_admin.id), data=json.dumps({"code": 123456}))
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert rv.status_code == 400
+        assert "invalid code" in rv.data
+
+    def test_admins_2factor_verify_secret_fail(self, loggedin_client):
+        test_admin = Admins().from_json({
+            'username': 'test_admin',
+            'password': 'S0meG00dP@ss',
+            'name': 'Test Admin'
+        })
+
+        db.session.add(test_admin)
+        db.session.commit()
+        rv = loggedin_client.post("/api/v1/admins/{0}/2factor/verify".format(test_admin.id), data=json.dumps({"code": 123456}))
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert rv.status_code == 400
+        assert "2 Factor Secret" in rv.data
+
+    def test_admins_2factor_verify_valid(self, loggedin_client):
+        test_admin = Admins().from_json({
+            'username': 'test_admin',
+            'password': 'S0meG00dP@ss',
+            'name': 'Test Admin'
+        })
+        test_admin.generate_otp_secret()
+        test_admin.otp_active = 1
+
+        db.session.add(test_admin)
+        db.session.commit()
+
+        secret = test_admin.otp_secret
+        token = onetimepass.get_totp(secret)
+        assert test_admin.verify_totp(token)
+        rv = loggedin_client.post("/api/v1/admins/{0}/2factor/verify".format(test_admin.id), data=json.dumps({"code": token}))
+        try:
+            json.loads(rv.data)
+        except:
+            assert False, "Not json"
+        assert "Success" in rv.data
+        assert rv.status_code == 200
+        assert "Success" in rv.data
 
     def test_configs_get_one(self, loggedin_client):
         rv = loggedin_client.get("/api/v1/configs/1", follow_redirects=True)

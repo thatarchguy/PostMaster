@@ -255,24 +255,23 @@ def validate_wtforms_password(form, field):
         """
         username = form.username.data
         password = form.password.data
+        two_factor = form.two_factor.data if form.two_factor.data else None
 
         try:
             if form.auth_source.data == 'PostMaster User':
                 admin = models.Admins.query.filter_by(username=username, source='local').first()
-
                 if admin:
-
                     if admin.is_unlocked():
-
                         if bcrypt.check_password_hash(admin.password, password):
+                            if admin.otp_active:
+                                if not admin.verify_totp(two_factor):
+                                    raise WtfStopValidation('2 Factor token was incorrect')
                             form.admin = admin
                             return
                         else:
                             increment_failed_login(username)
-
                     else:
                         raise WtfStopValidation('The user is currently locked out. Please try logging in again later.')
-
                 json_logger(
                     'auth', username,
                     'The administrator "{0}" entered an incorrect username or password'.format(
@@ -280,19 +279,17 @@ def validate_wtforms_password(form, field):
                 raise WtfStopValidation('The username or password was incorrect')
             else:
                 ad_object = AD()
-
                 if ad_object.login(username, password):
-
                     if ad_object.check_group_membership():
                         friendly_username = ad_object.get_loggedin_user()
                         display_name = ad_object.get_loggedin_user_display_name()
-
                         if not models.Admins.query.filter_by(username=friendly_username, source='ldap').first():
                             add_ldap_user_to_db(friendly_username, display_name)
-
                         admin = models.Admins.query.filter_by(username=friendly_username, source='ldap').first()
+                        if admin.otp_active:
+                            if not admin.verify_totp(two_factor):
+                                raise WtfStopValidation('2 Factor token was incorrect')
                         form.admin = admin
-
         except ADException as e:
             raise WtfStopValidation(e.message)
 

@@ -10,7 +10,7 @@
                     addStatusMessage('{{messages[-1][0]}}', '{{messages[-1][1] | new_line_to_break}}');
                 });
             </script>
-        {% endif %}     
+        {% endif %}
     {% endwith %}
 {% endblock %}
 
@@ -29,6 +29,10 @@
                     <div class="input-group loginInput">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                         {{ loginForm.password(class_='form-control', required=True, placeholder='Enter a password') }}
+                    </div>
+                    <div class="input-group loginInput">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-record" title="Only needed if 2 Factor is enabled for your account"></i></span>
+                        {{ loginForm.two_factor(class_='form-control', required=False, placeholder='Enter 2 Factor token') }}
                     </div>
                     <div class="input-group loginInput">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-cloud"></i></span>

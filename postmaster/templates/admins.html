@@ -23,6 +23,7 @@
                     <th id="usernameAdminHeader">Email:</th>
                     <th id="passwordAdminHeader">Password:</th>
                     <th id="nameAdminHeader">Name:</th>
+                    <th id="twoFactorHeader">2FA:</th>
                     <th id="lockedAdminHeader">Locked:</th>
                     <th id="actionHeader">Action:</th>
                 </tr>
@@ -33,6 +34,7 @@
                     <td data-title="Password: "><input id="newAdminPasswordInput" class="form-control" type="password" placeholder="Enter the new admin's password" /></td>
                     <td data-title="Name: "><input id="newAdminNameInput" class="form-control" type="text" placeholder="Enter a new admins's name" /></td>
                     <td class="hiddenMobile"></td>
+                    <td class="hiddenMobile"></td>
                     <td data-title="Action: "><a href="#" id="newItemAnchor">Add</a></td>
                 </tr>
             </tbody>
@@ -41,6 +43,31 @@
 </div>
 <div class="row">
     <ul class="pagination hidden" id="pagination"></ul>
+</div>
+
+<!-- 2 Factor Modal -->
+<div class="modal fade" id="twoFAModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Setup 2 Factor</h4>
+            </div>
+            <div class="modal-body">
+                <div id="qrcode"></div>
+                <p>Scan QR code with an App like Authy or Google Authenticator</p>
+                <div class="input-group">
+                  <input type="text" id="verify2FACode" placeholder="Input Code">
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" id="verify2FABtn" type="button">Verify</button>
+                  </span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Confirmation Modal -->
@@ -60,4 +87,6 @@
         </div>
     </div>
 </div>
+
+
 {% endblock %}

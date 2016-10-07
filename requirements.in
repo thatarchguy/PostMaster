@@ -9,8 +9,10 @@ Flask-WTF
 mock
 mockldap
 mysqlclient
+onetimepass
 passlib
 pylint
+pyqrcode
 pytest
 pytest-cov
 python-ldap

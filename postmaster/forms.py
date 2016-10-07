@@ -5,7 +5,7 @@ Purpose: form definitions for the app
 """
 
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, IntegerField, validators
 from wtforms.validators import DataRequired
 from postmaster import models
 from postmaster.utils import validate_wtforms_password
@@ -16,6 +16,7 @@ class LoginForm(Form):
     """
     username = StringField(label='Username', validators=[DataRequired()])
     password = PasswordField(label='Password', validators=[DataRequired(), validate_wtforms_password])
+    two_factor = IntegerField(label='2 Factor', validators=(validators.Optional(),))
     auth_source = SelectField('PostMaster User', validators=[DataRequired()])
 
     @classmethod
