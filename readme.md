@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/StackFocus/PostMaster.png?label=ready&title=Ready)](https://waffle.io/StackFocus/PostMaster)
 ## PostMaster [![Build Status](https://travis-ci.org/StackFocus/PostMaster.svg?branch=master)](https://travis-ci.org/StackFocus/PostMaster) ![Python](https://img.shields.io/badge/python-2.7-blue.svg) ![Flask](http://flask.pocoo.org/static/badges/made-with-flask-s.png)
 
 ### Overview
