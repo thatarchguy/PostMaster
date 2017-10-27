@@ -9,16 +9,13 @@ not required on the host system.
 - Install Vagrant by using your package manager or downloading it at:
 [https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html)
 
+- If you are using libvirt as your Vagrant provider (typical use case when
+developing on Fedora), you must have the `sshfs` Vagrant plugin installed. To
+install it, either run `sudo dnf install vagrant-sshfs` or
+`vagrant install sshfs`.
+
 - Run `vagrant up` to provision a Vagrant guest (development VM). Some operating
 systems require running vagrant with `sudo` or administrative rights.
-
-- If you are using libvirt as your Vagrant provider (typical use case when 
-developing on Fedora), you must run `cp config.default.py config.py` in the
-PostMaster git directory. This is because the folder syncing is done through
-rsync, which is not bidirectional and therefore, the next time the folder syncs,
-the `config.py` file created by Vagrant (using Ansible) on the guest VM will be
-lost. To turn on automatic folder syncing if you are using libvirt, always run
-`vagrant rsync-auto` after running `vagrant up`.
 
 - Access PostMaster at [http://localhost:8080](http://localhost:8080) via your web browser
 
